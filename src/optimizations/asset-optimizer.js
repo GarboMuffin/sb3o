@@ -1,51 +1,101 @@
 const Optimization = require('./optimization');
 const md5 = require('../md5');
 
+class AsyncLimiter {
+  constructor ({concurrency}) {
+    this.concurrency = concurrency;
+    this.jobs = [];
+    this.error = false;
+  }
+
+  add(callback) {
+    this.jobs.push(callback);
+  }
+
+  _jobFinish() {
+    if (this.jobs.length) {
+      this._startJob();
+    } else {
+      this._resolve();
+    }
+  }
+
+  _jobError() {
+    this.error = true;
+    this._reject();
+  }
+
+  _startJob() {
+    if (this.error) {
+      return;
+    }
+    const job = this.jobs.shift();
+    job()
+      .then(() => this._jobFinish())
+      .catch((e) => this._jobError(e));
+  }
+
+  done() {
+    if (this.jobs.length === 0) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      this._resolve = resolve;
+      this._reject = reject;
+      for (let i = 0; i < Math.min(this.concurrency, this.jobs.length); i++) {
+        this._startJob();
+      }
+    });
+  }
+}
+
 class AssetOptimization extends Optimization {
   async optimizeAsset(data) {
     throw new Error('Not implemented');
-  }
-
-  async optimizeAssetWithSizeCheck(data) {
-    const optimized = await this.optimizeAsset(data);
-    if (optimized.byteLength > data.byteLength) {
-      this.warn('optimization made asset larger');
-      return data;
-    }
-    return optimized;
   }
 
   shouldOptimize(asset) {
     return false;
   }
 
-  async run() {
-    const alreadyOptimizedAssets = new Map();
+  run() {
+    const assetsToOptimize = new Map();
     for (const target of this.project.projectData.targets) {
       for (const asset of [...target.costumes, ...target.sounds]) {
-        if (!this.shouldOptimize(asset)) {
-          continue;
+        if (this.shouldOptimize(asset)) {
+          const md5ext = asset.md5ext;
+          if (assetsToOptimize.has(md5ext)) {
+            assetsToOptimize.get(md5ext).push(asset);
+          } else {
+            assetsToOptimize.set(md5ext, [asset]);
+          }
         }
-
-        const md5ext = asset.md5ext;
-        let newmd5ext;
-
-        if (alreadyOptimizedAssets.has(md5ext)) {
-          newmd5ext = alreadyOptimizedAssets.get(md5ext);
-        } else {
-          const extension = md5ext.split('.')[1];
-          const assetData = this.project.assets.get(md5ext);
-          const optimizedAssetData = await this.optimizeAssetWithSizeCheck(assetData);
-          newmd5ext = `${md5(optimizedAssetData)}.${extension}`;
-          alreadyOptimizedAssets.set(md5ext, newmd5ext);
-          this.project.assets.delete(md5ext);
-          this.project.assets.set(newmd5ext, optimizedAssetData);
-        }
-
-        asset.md5ext = newmd5ext;
-        asset.assetId = newmd5ext.split('.')[0];
       }
     }
+
+    const limiter = new AsyncLimiter({
+      concurrency: 5
+    });
+    for (const [md5ext, assets] of assetsToOptimize.entries()) {
+      limiter.add(async () => {
+        const extension = md5ext.split('.')[1];
+        const assetData = this.project.assets.get(md5ext);
+        const optimizedAssetData = await this.optimizeAsset(assetData);
+        if (optimizedAssetData.byteLength > assetData.byteLength) {
+          this.warn(`optimizing ${md5ext} increased size; skipping`);
+          return;
+        }
+
+        const newmd5ext = `${md5(optimizedAssetData)}.${extension}`;
+        this.project.assets.delete(md5ext);
+        this.project.assets.set(newmd5ext, optimizedAssetData);
+
+        for (const asset of assets) {
+          asset.md5ext = newmd5ext;
+          asset.assetId = newmd5ext.split('.')[0];
+        }
+      });
+    }
+
+    return limiter.done();
   }
 }
 
