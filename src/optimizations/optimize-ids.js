@@ -45,6 +45,10 @@ class OptimizeIDs extends Optimization {
   run() {
     const targetPools = new Map();
     const variablePool = new IdPool();
+    for (const monitor of this.project.projectData.monitors) {
+      const monitorId = monitor.id;
+      variablePool.addReference(monitorId);
+    }
     for (const target of this.project.projectData.targets) {
       const blockPool = new IdPool();
       const commentPool = new IdPool();
@@ -121,6 +125,10 @@ class OptimizeIDs extends Optimization {
 
     variablePool.generateNewIds();
 
+    for (const monitor of this.project.projectData.monitors) {
+      const monitorId = monitor.id;
+      monitor.id = variablePool.getNewId(monitorId);
+    }
     for (const [target, {blockPool, commentPool}] of targetPools.entries()) {
       blockPool.generateNewIds();
       commentPool.generateNewIds();
