@@ -1,10 +1,10 @@
 const JSZip = require('jszip');
-const parseJSON = require('./json');
+const {parse} = require('./json');
 
 const deserialize = async (binaryProject) => {
   const zip = await JSZip.loadAsync(binaryProject);
   const projectDataText = await zip.file('project.json').async('text');
-  const projectData = parseJSON(projectDataText);
+  const projectData = parse(projectDataText);
   const assets = new Map();
   for (const file of Object.keys(zip.files)) {
     if (

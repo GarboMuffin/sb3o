@@ -262,4 +262,44 @@ const parse = source => {
   }
 };
 
-module.exports = parse;
+const stringify = object => {
+  if (typeof object === 'string') {
+    return JSON.stringify(object);
+  }
+  if (typeof object === 'number') {
+    if (Number.isNaN(object)) {
+      return '0';
+    }
+    // TODO: investigate converting numbers like "48000" to "48e3"
+    return object.toString();
+  }
+  if (typeof object === 'boolean') {
+    return object.toString();
+  }
+  if (object === null) {
+    return 'null';
+  }
+  if (Array.isArray(object)) {
+    return '[' + object.map((i) => stringify(i)).join(',') + ']';
+  }
+  if (typeof object === 'object') {
+    let result = '{';
+    const keys = Object.keys(object);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = object[key];
+      result += `${JSON.stringify(key)}:${stringify(value)}`;
+      if (i !== keys.length - 1) {
+        result += ',';
+      }
+    }
+    result += '}';
+    return result;
+  }
+  throw new Error('Can not stringify');
+};
+
+module.exports = {
+  parse,
+  stringify
+};
