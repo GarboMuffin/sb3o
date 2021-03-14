@@ -47,6 +47,10 @@ class SVGOptimizer extends AssetOptimization {
     return asset.dataFormat === 'svg';
   }
 
+  getConcurrency() {
+    return 5;
+  }
+
   optimizeAsset(data) {
     const decoded = decoder.decode(data);
     const optimized = svgo.optimize(decoded, {

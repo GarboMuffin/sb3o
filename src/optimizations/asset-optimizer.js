@@ -48,12 +48,16 @@ class AsyncLimiter {
 }
 
 class AssetOptimization extends Optimization {
-  async optimizeAsset(data) {
-    throw new Error('Not implemented');
-  }
-
   shouldOptimize(asset) {
     return false;
+  }
+
+  getConcurrency() {
+    return 5;
+  }
+
+  async optimizeAsset(data) {
+    throw new Error('Not implemented');
   }
 
   run() {
@@ -72,7 +76,7 @@ class AssetOptimization extends Optimization {
     }
 
     const limiter = new AsyncLimiter({
-      concurrency: 5
+      concurrency: this.getConcurrency()
     });
     for (const [md5ext, assets] of assetsToOptimize.entries()) {
       limiter.add(async () => {
