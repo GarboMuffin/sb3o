@@ -3,7 +3,8 @@ const serialize = require('./serialize');
 const optimizations = require('./optimizations');
 
 const optimize = async (project, options) => {
-  let deserialized = await deserialize(project);
+  console.log('deserializing...');
+  const deserialized = await deserialize(project);
 
   for (const optimizationId of Object.keys(optimizations)) {
     console.log(`${optimizationId}...`);
@@ -12,6 +13,7 @@ const optimize = async (project, options) => {
     await optimizer.run();
   }
 
+  console.log('serializing...');
   const serialized = await serialize(deserialized);
 
   return serialized;
