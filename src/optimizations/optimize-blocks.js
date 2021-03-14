@@ -1,6 +1,6 @@
 const Optimization = require('./optimization');
 
-class RemoveEmptyFields extends Optimization {
+class OptimizeBlocks extends Optimization {
   run() {
     for (const target of this.project.projectData.targets) {
       for (const block of Object.values(target.blocks)) {
@@ -10,9 +10,15 @@ class RemoveEmptyFields extends Optimization {
         if (Object.keys(block.inputs).length === 0) {
           delete block.inputs;
         }
+        if (!block.topLevel) {
+          delete block.topLevel;
+        }
+        if (!block.shadow) {
+          delete block.shadow;
+        }
       }
     }
   }
 }
 
-module.exports = RemoveEmptyFields;
+module.exports = OptimizeBlocks;
