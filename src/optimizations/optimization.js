@@ -3,8 +3,8 @@ class Optimization {
     this.project = deserializedProject;
   }
 
-  async run() {
-
+  run() {
+    throw new Error('Not implemented');
   }
 }
 
