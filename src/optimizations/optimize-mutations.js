@@ -8,6 +8,7 @@ class RemoveEmptyFields extends Optimization {
           if (block.mutation.warp) {
             block.mutation.warp = JSON.parse(block.mutation.warp);
           }
+        } else if (block.opcode === 'control_stop') {
           if (block.mutation.hasnext) {
             block.mutation.hasnext = JSON.parse(block.mutation.hasnext);
           }
