@@ -93,23 +93,27 @@ class OptimizeIDs extends Optimization {
           if (block.comment) {
             commentPool.addReference(block.comment);
           }
-          if (block.fields.VARIABLE) {
-            variablePool.addReference(block.fields.VARIABLE[1]);
+          if (block.fields) {
+            if (block.fields.VARIABLE) {
+              variablePool.addReference(block.fields.VARIABLE[1]);
+            }
+            if (block.fields.LIST) {
+              variablePool.addReference(block.fields.LIST[1]);
+            }
+            if (block.fields.BROADCAST_OPTION) {
+              variablePool.addReference(block.fields.BROADCAST_OPTION[1]);
+            }
           }
-          if (block.fields.LIST) {
-            variablePool.addReference(block.fields.LIST[1]);
-          }
-          if (block.fields.BROADCAST_OPTION) {
-            variablePool.addReference(block.fields.BROADCAST_OPTION[1]);
-          }
-          for (const inputName of Object.keys(block.inputs)) {
-            const input = block.inputs[inputName];
-            const inputValue = input[1];
-            if (Array.isArray(inputValue)) {
-              handleCompressedNative(inputValue);
-            } else if (typeof inputValue === 'string') {
-              const childBlockId = input[1];
-              blockPool.addReference(childBlockId);
+          if (block.inptus) {
+            for (const inputName of Object.keys(block.inputs)) {
+              const input = block.inputs[inputName];
+              const inputValue = input[1];
+              if (Array.isArray(inputValue)) {
+                handleCompressedNative(inputValue);
+              } else if (typeof inputValue === 'string') {
+                const childBlockId = input[1];
+                blockPool.addReference(childBlockId);
+              }
             }
           }
         }
@@ -177,39 +181,45 @@ class OptimizeIDs extends Optimization {
           if (block.comment) {
             block.comment = commentPool.getNewId(block.comment);
           }
-          if (block.fields.VARIABLE) {
-            block.fields.VARIABLE[1] = variablePool.getNewId(block.fields.VARIABLE[1]);
-          }
-          if (block.fields.LIST) {
-            block.fields.LIST[1] = variablePool.getNewId(block.fields.LIST[1]);
-          }
-          if (block.fields.BROADCAST_OPTION) {
-            block.fields.BROADCAST_OPTION[1] = variablePool.getNewId(block.fields.BROADCAST_OPTION[1]);
+          if (block.fields) {
+            if (block.fields.VARIABLE) {
+              block.fields.VARIABLE[1] = variablePool.getNewId(block.fields.VARIABLE[1]);
+            }
+            if (block.fields.LIST) {
+              block.fields.LIST[1] = variablePool.getNewId(block.fields.LIST[1]);
+            }
+            if (block.fields.BROADCAST_OPTION) {
+              block.fields.BROADCAST_OPTION[1] = variablePool.getNewId(block.fields.BROADCAST_OPTION[1]);
+            }
           }
           if (block.opcode === 'procedures_call' || block.opcode === 'procedures_prototype') {
             const argumentIds = JSON.parse(block.mutation.argumentids);
             const newArgumentIds = [];
             const newInputs = {};
             for (let i = 0; i < argumentIds.length; i++) {
-              const originalArgumentId = argumentIds[i];
-              const argumentInput = block.inputs[originalArgumentId];
               const newArgumentId = generateId(i);
-              if (argumentInput) {
-                newInputs[newArgumentId] = argumentInput;
+              if (block.inputs) {
+                const originalArgumentId = argumentIds[i];
+                const argumentInput = block.inputs[originalArgumentId];
+                if (argumentInput) {
+                  newInputs[newArgumentId] = argumentInput;
+                }
               }
               newArgumentIds.push(newArgumentId);
             }
             block.inputs = newInputs;
             block.mutation.argumentids = JSON.stringify(newArgumentIds);
           }
-          for (const inputName of Object.keys(block.inputs)) {
-            const input = block.inputs[inputName];
-            const inputValue = input[1];
-            if (Array.isArray(inputValue)) {
-              handleCompressedNative(inputValue);
-            } else if (typeof inputValue === 'string') {
-              const childBlockId = input[1];
-              input[1] = blockPool.getNewId(childBlockId);
+          if (block.inputs) {
+            for (const inputName of Object.keys(block.inputs)) {
+              const input = block.inputs[inputName];
+              const inputValue = input[1];
+              if (Array.isArray(inputValue)) {
+                handleCompressedNative(inputValue);
+              } else if (typeof inputValue === 'string') {
+                const childBlockId = input[1];
+                input[1] = blockPool.getNewId(childBlockId);
+              }
             }
           }
         }
