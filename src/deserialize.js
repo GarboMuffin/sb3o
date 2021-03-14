@@ -10,7 +10,8 @@ const deserialize = async (binaryProject) => {
     if (
       /^[a-z0-9]{32}\.svg$/.test(file) ||
       /^[a-z0-9]{32}\.png$/.test(file) ||
-      /^[a-z0-9]{32}\.wav$/.test(file)
+      /^[a-z0-9]{32}\.wav$/.test(file) ||
+      /^[a-z0-9]{32}\.mp3$/.test(file)
     ) {
       assets.set(file, await zip.file(file).async('arraybuffer'));
     }

@@ -1,6 +1,6 @@
 const Optimization = require('./optimization');
 
-class RemoveBetaOptimization extends Optimization {
+class RemoveMetaOptimization extends Optimization {
   run() {
     this.project.projectData.meta = {
       semver: '3.0.0',
@@ -10,4 +10,4 @@ class RemoveBetaOptimization extends Optimization {
   }
 }
 
-module.exports = RemoveBetaOptimization;
+module.exports = RemoveMetaOptimization;

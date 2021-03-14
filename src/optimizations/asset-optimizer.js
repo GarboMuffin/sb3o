@@ -6,10 +6,10 @@ class AssetOptimization extends Optimization {
     throw new Error('Not implemented');
   }
 
-  async optimizeAssetWithSafetyChecks(data) {
+  async optimizeAssetWithSizeCheck(data) {
     const optimized = await this.optimizeAsset(data);
     if (optimized.byteLength > data.byteLength) {
-      console.warn("optimization made asset larger");
+      this.warn('optimization made asset larger');
       return data;
     }
     return optimized;
@@ -35,14 +35,12 @@ class AssetOptimization extends Optimization {
         } else {
           const extension = md5ext.split('.')[1];
           const assetData = this.project.assets.get(md5ext);
-          const optimizedAssetData = await this.optimizeAssetWithSafetyChecks(assetData);
+          const optimizedAssetData = await this.optimizeAssetWithSizeCheck(assetData);
           newmd5ext = `${md5(optimizedAssetData)}.${extension}`;
           alreadyOptimizedAssets.set(md5ext, newmd5ext);
           this.project.assets.delete(md5ext);
           this.project.assets.set(newmd5ext, optimizedAssetData);
         }
-
-        console.log(`${md5ext} -> ${newmd5ext}`);
 
         asset.md5ext = newmd5ext;
         asset.assetId = newmd5ext.split('.')[0];
