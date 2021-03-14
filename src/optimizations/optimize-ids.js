@@ -178,6 +178,22 @@ class OptimizeIDs extends Optimization {
           if (block.fields.BROADCAST_OPTION) {
             block.fields.BROADCAST_OPTION[1] = variablePool.getNewId(block.fields.BROADCAST_OPTION[1]);
           }
+          if (block.opcode === 'procedures_call' || block.opcode === 'procedures_prototype') {
+            const argumentIds = JSON.parse(block.mutation.argumentids);
+            const newArgumentIds = [];
+            const newInputs = {};
+            for (let i = 0; i < argumentIds.length; i++) {
+              const originalArgumentId = argumentIds[i];
+              const argumentInput = block.inputs[originalArgumentId];
+              const newArgumentId = generateId(i);
+              if (argumentInput) {
+                newInputs[newArgumentId] = argumentInput;
+              }
+              newArgumentIds.push(newArgumentId);
+            }
+            block.inputs = newInputs;
+            block.mutation.argumentids = JSON.stringify(newArgumentIds);
+          }
           for (const inputName of Object.keys(block.inputs)) {
             const input = block.inputs[inputName];
             const inputValue = input[1];
