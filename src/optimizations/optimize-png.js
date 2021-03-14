@@ -8,7 +8,7 @@ class PNGOptimizer extends AssetOptimization {
   }
 
   getConcurrency() {
-    return os.cpus().length - 1;
+    return Math.max(1, os.cpus().length - 1);
   }
 
   async optimizeAsset(data) {
