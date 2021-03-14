@@ -2,12 +2,12 @@ const Optimization = require('./optimization');
 const md5 = require('../md5');
 
 class AssetOptimization extends Optimization {
-  optimizeAsset(data) {
+  async optimizeAsset(data) {
     throw new Error('Not implemented');
   }
 
-  optimizeAssetWithSafetyChecks(data) {
-    const optimized = this.optimizeAsset(data);
+  async optimizeAssetWithSafetyChecks(data) {
+    const optimized = await this.optimizeAsset(data);
     if (optimized.byteLength > data.byteLength) {
       console.warn("optimization made asset larger");
       return data;
@@ -19,7 +19,7 @@ class AssetOptimization extends Optimization {
     return false;
   }
 
-  run() {
+  async run() {
     const alreadyOptimizedAssets = new Map();
     for (const target of this.project.projectData.targets) {
       for (const asset of [...target.costumes, ...target.sounds]) {
@@ -35,7 +35,7 @@ class AssetOptimization extends Optimization {
         } else {
           const extension = md5ext.split('.')[1];
           const assetData = this.project.assets.get(md5ext);
-          const optimizedAssetData = this.optimizeAssetWithSafetyChecks(assetData);
+          const optimizedAssetData = await this.optimizeAssetWithSafetyChecks(assetData);
           newmd5ext = `${md5(optimizedAssetData)}.${extension}`;
           alreadyOptimizedAssets.set(md5ext, newmd5ext);
           this.project.assets.delete(md5ext);
