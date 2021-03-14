@@ -5,7 +5,12 @@ class RemoveEmptyFields extends Optimization {
     for (const target of this.project.projectData.targets) {
       for (const block of Object.values(target.blocks)) {
         if (block.opcode === 'procedures_call' || block.opcode === 'procedures_prototype') {
-          block.mutation.warp = JSON.parse(block.mutation.warp);
+          if (block.mutation.warp) {
+            block.mutation.warp = JSON.parse(block.mutation.warp);
+          }
+          if (block.mutation.hasnext) {
+            block.mutation.hasnext = JSON.parse(block.mutation.hasnext);
+          }
         }
       }
     }
