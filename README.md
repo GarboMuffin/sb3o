@@ -1,9 +1,18 @@
 Scratch 3 Project minifier.
 
-Goals:
+## Goals
 
- - High customizability
- - Reduce size of assets
  - Reduce size of project JSON
+ - Reduce size of assets
  - ... without affecting project behavior
  - ... without changing any UI-accessible data
+
+## Usage
+
+```
+sb3o test.sb3 -o output.sb3
+```
+
+## Motivation
+
+Not sure

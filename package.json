@@ -2,7 +2,10 @@
   "name": "sb3o",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
+  "bin": {
+    "sb3o": "bin/sb3o"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,6 +13,7 @@
   "license": "GPL-3.0-or-later",
   "private": true,
   "dependencies": {
+    "commander": "^7.1.0",
     "imagemin-optipng": "^8.0.0",
     "jszip": "^3.6.0",
     "optipng-bin": "^7.0.0",
