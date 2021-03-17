@@ -5,11 +5,13 @@
   </head>
   <body>
     <p>
-      <input type="file" accept=".sb3">
+      <input type="file" accept=".sb3" autocomplete="off">
+      <p id="dbg"></p>
     </p>
     <script src="dist/main.js"></script>
     <script>
       document.querySelector('input[type=file]').onchange = (e) => {
+        const input = e.target.files[0];
         const fr = new FileReader();
         fr.onload = () => {
           sb3o(fr.result)
@@ -21,6 +23,9 @@
               link.download = 'optimized.sb3';
               document.body.appendChild(link);
               link.click();
+              const inputLength = input.size;
+              const outputLength = o.byteLength;
+              document.getElementById('dbg').textContent = `Input size: ${inputLength} Output size: ${outputLength} (-${100 - Math.round(outputLength / inputLength * 100)}%)`;
               setTimeout(() => {
                 link.remove();
                 URL.revokeObjectURL(url);
@@ -30,7 +35,7 @@
               alert(err);
             });
         }
-        fr.readAsArrayBuffer(e.target.files[0]);
+        fr.readAsArrayBuffer(input);
       };
     </script>
   </body>
