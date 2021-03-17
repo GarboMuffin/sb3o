@@ -5,5 +5,5 @@ module.exports = {
   'optimize-blocks': require('./optimize-blocks'),
   'optimize-mutations': require('./optimize-mutations'),
   'optimize-svg': require('./optimize-svg'),
-  'optimize-png': require('./optimize-png')
+  // 'optimize-png': require('./optimize-png')
 };

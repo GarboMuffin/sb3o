@@ -1,4 +1,4 @@
-const svgo = require('svgo');
+const svgo = require('svgo/dist/svgo.browser.js');
 const AssetOptimization = require('./asset-optimizer');
 
 const decoder = new TextDecoder();

@@ -7,7 +7,9 @@
     "sb3o": "bin/sb3o"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --watch",
+    "build": "webpack"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
@@ -16,7 +18,12 @@
     "commander": "^7.1.0",
     "imagemin-optipng": "^8.0.0",
     "jszip": "^3.6.0",
+    "md5": "^2.3.0",
     "optipng-bin": "^7.0.0",
     "svgo": "^2.2.2"
+  },
+  "devDependencies": {
+    "webpack": "^5.26.3",
+    "webpack-cli": "^4.5.0"
   }
 }
