@@ -26,7 +26,7 @@
               const url = URL.createObjectURL(new Blob([o], {type: 'application/x.scratch.sb3'}));
               const link = document.createElement('a');
               link.href = url;
-              link.download = 'optimized.sb3';
+              link.download = input.name.match(/^[^.]*/) + '-optimized.sb3';
               document.body.appendChild(link);
               link.click();
               const inputLength = input.size;
