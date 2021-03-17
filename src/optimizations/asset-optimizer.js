@@ -82,6 +82,10 @@ class AssetOptimization extends Optimization {
       limiter.add(async () => {
         const extension = md5ext.split('.')[1];
         const assetData = this.project.assets.get(md5ext);
+        if (!assetData) {
+          this.warn(`${md5ext} does not exist; skipping`);
+          return;
+        }
         const optimizedAssetData = await this.optimizeAsset(assetData);
         if (optimizedAssetData.byteLength > assetData.byteLength) {
           this.warn(`optimizing ${md5ext} increased size; skipping`);
