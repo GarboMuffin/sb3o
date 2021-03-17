@@ -20,9 +20,9 @@ class AsyncLimiter {
     }
   }
 
-  _jobError() {
+  _jobError(e) {
     this.error = true;
-    this._reject();
+    this._reject(e);
   }
 
   _startJob() {
