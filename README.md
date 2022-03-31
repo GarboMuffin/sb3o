@@ -1,3 +1,5 @@
+# This project is unmaintained and contains many known bugs which WILL corrupt projects. Do not use.
+
 Scratch 3 Project minifier.
 
 ## Goals
